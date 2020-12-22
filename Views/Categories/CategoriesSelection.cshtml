@@ -1,0 +1,94 @@
+﻿@model CategoriesPanels.Models.Category
+@{
+    Layout = null;
+}
+
+
+<!DOCTYPE html>
+<script src="~/Scripts/jquery-3.4.1.js"></script>
+<script src="~/Scripts/jquery.validate.unobtrusive.js"></script>
+<script>
+
+    function getval(sel) {
+        alert(sel.value);
+    }
+
+
+    function GetIDs(selecteditem) {
+ 
+        sel_val = selecteditem.value;
+        ///alert(selecteditem.value);
+        ////$.get("/Categories/GetSubCategories", { ParentID: sel_val } ,
+        ////    function (data) {
+        ////        ///var result = JSON.parse(data);
+        ////        console.log(data);
+        ////        alert(data.CategoryName);
+        ////        var options = $('#ListBoxes');
+        ////        //////options.empty();
+        ////        options.append("<Select onchange = 'GetIDs(this);' size = 10>")
+        ////        $.each(data, function (index, item) {
+
+        ////            options.append($("<option />").val(item.value).text(item.text));
+        ////            options.append("</select>")
+        ////        });
+
+
+        ////    });
+        $.ajax({
+            type: 'POST',
+            dataType: 'json',
+            url: '/Categories/GetSubCategories',
+            data: { ParentID: sel_val },
+            success: function (Data) {
+                if (Data.length != 0) {
+                    var J = JSON.stringify(Data);
+                    //alert(J);
+                    console.log(Data);
+                    var options = $('#ListBoxes');
+                    //////options.empty();
+                    var c = 1;
+                    var $sBox = $("<Select onchange = 'GetIDs(this);' size = 10>").appendTo($('#ListBoxes'));
+                    
+                    $.each(Data, function () {
+
+                        $sBox.append($("<option />").val(this.CategoryID).text(this.CategoryName));
+
+                    });
+                    console.log($sBox)
+                    $sBox.append("</select>");
+                    
+                }
+            }
+
+
+
+
+            ////,
+            ////error: function (XMLHttpRequest, textStatus, errorThrown) {
+
+            ////}
+        });  
+
+
+    }
+
+
+</script>
+<html>
+
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Select Categories</title>
+</head>
+<body>
+
+
+    @using (@Html.BeginForm())
+    {
+        <div id="ListBoxes">
+            @Html.DropDownListFor(model => model.CategoryID, Model.DefaultCategoryList, new { @class = "form-control", @id = "CompanyListBox", @size = 10, @onchange = "GetIDs(this);" })
+          
+        </div>
+    }
+    </body>
+</html>
